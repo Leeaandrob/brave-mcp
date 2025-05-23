@@ -1,12 +1,49 @@
 'use client';
 
+import { useState } from 'react';
 import { useChat } from 'ai/react';
 import { Send } from 'lucide-react';
 
 export function ChatInterface() {
+  const [searchType, setSearchType] = useState('web');
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/chat',
   });
+
+  const enhancedHandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let toolName;
+    switch (searchType) {
+      case 'image':
+        toolName = 'brave_image_search';
+        break;
+      case 'video':
+        toolName = 'brave_video_search';
+        break;
+      case 'news':
+        toolName = 'brave_news_search';
+        break;
+      default:
+        toolName = 'brave_web_search';
+    }
+
+    await handleSubmit(e, {
+      body: {
+        messages: [
+          {
+            role: 'user',
+            content: input,
+            toolInvocations: [
+              {
+                toolName,
+                parameters: { query: input, count: 5 },
+              },
+            ],
+          },
+        ],
+      },
+    });
+  };
 
   return (
     <div className="flex flex-col h-[600px] max-w-4xl mx-auto border rounded-lg bg-white shadow-lg">
@@ -60,22 +97,62 @@ export function ChatInterface() {
       </div>
 
       <div className="border-t p-4">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Ask me anything..."
-            className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            className="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Send size={20} />
-          </button>
+        <form onSubmit={enhancedHandleSubmit} className="flex flex-col gap-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={handleInputChange}
+              placeholder="Ask me anything..."
+              className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              className="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Send size={20} />
+            </button>
+          </div>
+          <div className="flex gap-4 justify-center">
+            <label>
+              <input
+                type="radio"
+                value="web"
+                checked={searchType === 'web'}
+                onChange={(e) => setSearchType(e.target.value)}
+              />
+              Web
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="news"
+                checked={searchType === 'news'}
+                onChange={(e) => setSearchType(e.target.value)}
+              />
+              News
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="image"
+                checked={searchType === 'image'}
+                onChange={(e) => setSearchType(e.target.value)}
+              />
+              Images
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="video"
+                checked={searchType === 'video'}
+                onChange={(e) => setSearchType(e.target.value)}
+              />
+              Videos
+            </label>
+          </div>
         </form>
       </div>
     </div>

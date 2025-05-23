@@ -142,8 +142,31 @@ export class BraveSearchService {
         return this.getMockVideoSearchResponse(params.q);
       }
 
-      const response = await this.client.get('/videos/search', { params });
-      return response.data;
+      // Brave API includes video results in web search response
+      const response = await this.client.get('/web/search', { params });
+      
+      // Extract video results from the web search response
+      const webData = response.data;
+      const videoResults = webData.videos?.results || [];
+      
+      return {
+        videos: {
+          results: videoResults.map((result: any) => ({
+            title: result.title,
+            url: result.url,
+            videoUrl: result.url,
+            source: result.meta_url?.hostname || new URL(result.url).hostname,
+            duration: result.video?.duration,
+            publishedTime: result.age,
+            thumbnail: result.thumbnail ? {
+              url: result.thumbnail.src || result.thumbnail.original,
+              height: 180,
+              width: 320,
+            } : undefined,
+          })),
+          totalResults: videoResults.length,
+        },
+      };
     } catch (error) {
       MCPLogger.logError('Video search failed, using mock data', error);
       return this.getMockVideoSearchResponse(params.q);
