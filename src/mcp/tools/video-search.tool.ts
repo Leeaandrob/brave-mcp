@@ -48,18 +48,18 @@ export class VideoSearchTool extends BaseSearchTool {
           country: validatedArgs.country
         });
         
-        return response.videos.results.map((result, index) => ({
+        return response.results.map((result, index) => ({
           rank: index + 1,
           title: result.title,
-          video_url: result.videoUrl,
+          video_url: result.url,
           page_url: result.url,
-          source: result.source,
-          duration: result.duration,
-          duration_seconds: this.parseDurationToSeconds(result.duration),
-          published_time: result.publishedTime,
+          source: result.meta_url?.hostname || 'Unknown',
+          duration: result.video.duration,
+          duration_seconds: this.parseDurationToSeconds(result.video.duration),
+          published_time: result.page_age,
           thumbnail: result.thumbnail ? {
-            url: result.thumbnail.url,
-            dimensions: `${result.thumbnail.width}x${result.thumbnail.height}`
+            url: result.thumbnail.src,
+            dimensions: 'unknown'
           } : null,
           relevance_score: this.calculateRelevanceScore(result, enhancedQuery)
         }));

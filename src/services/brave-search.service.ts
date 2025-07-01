@@ -150,22 +150,26 @@ export class BraveSearchService {
       const videoResults = webData.videos?.results || [];
       
       return {
-        videos: {
-          results: videoResults.map((result: any) => ({
-            title: result.title,
-            url: result.url,
-            videoUrl: result.url,
-            source: result.meta_url?.hostname || new URL(result.url).hostname,
-            duration: result.video?.duration,
-            publishedTime: result.age,
-            thumbnail: result.thumbnail ? {
-              url: result.thumbnail.src || result.thumbnail.original,
-              height: 180,
-              width: 320,
-            } : undefined,
-          })),
-          totalResults: videoResults.length,
-        },
+        type: 'videos',
+        results: videoResults.map((result: any) => ({
+          type: 'video_result',
+          title: result.title,
+          url: result.url,
+          description: result.description || '',
+          age: result.age || 'Unknown',
+          page_age: result.page_age || new Date().toISOString(),
+          video: {
+            duration: result.video?.duration || '0:00',
+            views: result.video?.views || 0,
+            creator: result.video?.creator || 'Unknown',
+            publisher: result.video?.publisher || 'Unknown',
+          },
+          thumbnail: result.thumbnail ? {
+            src: result.thumbnail.src || result.thumbnail.original,
+            original: result.thumbnail.original,
+          } : undefined,
+          meta_url: result.meta_url,
+        })),
       };
     } catch (error) {
       MCPLogger.logError('Video search failed, using mock data', error);
@@ -210,87 +214,129 @@ export class BraveSearchService {
 
   private getMockNewsSearchResponse(query: string): BraveNewsSearchResponse {
     return {
-      news: {
-        results: [
-          {
-            title: `Breaking: Major development in ${query}`,
-            url: `https://example-news.com/breaking/${encodeURIComponent(query)}`,
-            description: `Breaking news about ${query}. This major development could have significant implications for the industry.`,
-            source: 'Example News Network',
-            publishedTime: new Date().toISOString(),
-            image: {
-              url: 'https://example.com/images/news1.jpg',
-              height: 300,
-              width: 400,
-            },
+      type: 'news',
+      results: [
+        {
+          title: `Breaking: Major development in ${query}`,
+          url: `https://example-news.com/breaking/${encodeURIComponent(query)}`,
+          description: `Breaking news about ${query}. This major development could have significant implications for the industry.`,
+          type: 'news_result',
+          age: '1 hour ago',
+          page_age: new Date().toISOString(),
+          thumbnail: {
+            src: 'https://example.com/images/news1.jpg',
           },
-          {
-            title: `Analysis: The impact of ${query} on the market`,
-            url: `https://example-business.com/analysis/${encodeURIComponent(query)}`,
-            description: `In-depth analysis of how ${query} is affecting market trends and business strategies.`,
-            source: 'Business Example',
-            publishedTime: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+          meta_url: {
+            hostname: 'example-news.com'
           },
-        ],
-        totalResults: 2,
-      },
+        },
+        {
+          title: `Analysis: The impact of ${query} on the market`,
+          url: `https://example-business.com/analysis/${encodeURIComponent(query)}`,
+          description: `In-depth analysis of how ${query} is affecting market trends and business strategies.`,
+          type: 'news_result',
+          age: '1 hour ago',
+          page_age: new Date(Date.now() - 3600000).toISOString(),
+          meta_url: {
+            hostname: 'example-business.com'
+          },
+        },
+      ],
     };
   }
 
   private getMockImageSearchResponse(query: string): BraveImageSearchResponse {
     return {
-      images: {
-        results: [
-          {
-            title: `High-quality image of ${query}`,
-            url: `https://example.com/gallery/${encodeURIComponent(query)}`,
-            imageUrl: `https://example.com/images/${encodeURIComponent(query)}-1.jpg`,
-            source: 'Example Gallery',
-            height: 800,
+      type: 'images',
+      results: [
+        {
+          title: `High-quality image of ${query} high quality`,
+          url: `https://example.com/gallery/${encodeURIComponent(query)}`,
+          source: 'Example Gallery',
+          type: 'image_result',
+          thumbnail: {
+            src: `https://example.com/images/${encodeURIComponent(query)}-1.jpg`,
             width: 1200,
+            height: 800,
           },
-          {
-            title: `Professional ${query} photography`,
-            url: `https://example-photos.com/${encodeURIComponent(query)}`,
-            imageUrl: `https://example-photos.com/images/${encodeURIComponent(query)}-2.jpg`,
-            source: 'Professional Photos',
-            height: 600,
+          properties: {
+            url: `https://example.com/images/${encodeURIComponent(query)}-1.jpg`,
+            width: 1200,
+            height: 800,
+          },
+          meta_url: {
+            hostname: 'example.com'
+          },
+        },
+        {
+          title: `Professional ${query} photography`,
+          url: `https://example-photos.com/${encodeURIComponent(query)}`,
+          source: 'Professional Photos',
+          type: 'image_result',
+          thumbnail: {
+            src: `https://example-photos.com/images/${encodeURIComponent(query)}-2.jpg`,
             width: 900,
+            height: 600,
           },
-        ],
-        totalResults: 2,
-      },
+          properties: {
+            url: `https://example-photos.com/images/${encodeURIComponent(query)}-2.jpg`,
+            width: 900,
+            height: 600,
+          },
+          meta_url: {
+            hostname: 'example-photos.com'
+          },
+        },
+      ],
     };
   }
 
   private getMockVideoSearchResponse(query: string): BraveVideoSearchResponse {
     return {
-      videos: {
-        results: [
-          {
-            title: `Complete tutorial: ${query}`,
-            url: `https://example-videos.com/tutorial/${encodeURIComponent(query)}`,
-            videoUrl: `https://example-videos.com/watch/${encodeURIComponent(query)}-tutorial`,
-            source: 'Example Video Platform',
+      type: 'videos',
+      results: [
+        {
+          title: `Complete tutorial: ${query}`,
+          url: `https://example-videos.com/watch/${encodeURIComponent(query)}-tutorial`,
+          description: `Learn everything about ${query} in this comprehensive tutorial.`,
+          type: 'video_result',
+          age: '1 day ago',
+          page_age: new Date(Date.now() - 86400000).toISOString(),
+          video: {
             duration: '15:30',
-            publishedTime: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-            thumbnail: {
-              url: `https://example-videos.com/thumbnails/${encodeURIComponent(query)}-1.jpg`,
-              height: 180,
-              width: 320,
-            },
+            views: 930,
+            creator: 'Example Creator',
+            publisher: 'Example Video Platform',
           },
-          {
-            title: `${query} explained in 5 minutes`,
-            url: `https://example-edu.com/video/${encodeURIComponent(query)}`,
-            videoUrl: `https://example-edu.com/watch/${encodeURIComponent(query)}-explained`,
-            source: 'Educational Videos',
+          thumbnail: {
+            src: `https://example-videos.com/thumbnails/${encodeURIComponent(query)}-1.jpg`,
+            original: `https://example-videos.com/thumbnails/${encodeURIComponent(query)}-1.jpg`,
+          },
+          meta_url: {
+            hostname: 'example-videos.com'
+          },
+        },
+        {
+          title: `${query} explained in 5 minutes`,
+          url: `https://example-edu.com/watch/${encodeURIComponent(query)}-explained`,
+          description: `Quick explanation of ${query} in under 6 minutes.`,
+          type: 'video_result',
+          age: '2 days ago',
+          page_age: new Date(Date.now() - 172800000).toISOString(),
+          video: {
             duration: '5:42',
-            publishedTime: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+            views: 1245,
+            creator: 'Educational Videos',
+            publisher: 'Educational Platform',
           },
-        ],
-        totalResults: 2,
-      },
+          thumbnail: {
+            src: `https://example-edu.com/thumbnails/${encodeURIComponent(query)}-2.jpg`,
+          },
+          meta_url: {
+            hostname: 'example-edu.com'
+          },
+        },
+      ],
     };
   }
 }

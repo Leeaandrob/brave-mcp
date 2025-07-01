@@ -54,16 +54,16 @@ export class ImageSearchTool extends BaseSearchTool {
           country: validatedArgs.country
         });
         
-        return response.images.results.map((result, index) => ({
+        return response.results.map((result, index) => ({
           rank: index + 1,
           title: result.title,
-          image_url: result.imageUrl,
+          image_url: result.properties.url,
           page_url: result.url,
           source: result.source,
           dimensions: {
-            width: result.width,
-            height: result.height,
-            aspect_ratio: `${result.width/result.height}`
+            width: result.properties.width,
+            height: result.properties.height,
+            aspect_ratio: `${result.properties.width/result.properties.height}`
           },
           relevance_score: this.calculateRelevanceScore(result, enhancedQuery)
         }));

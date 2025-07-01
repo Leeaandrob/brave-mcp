@@ -45,16 +45,16 @@ export class NewsSearchTool extends BaseSearchTool {
           country: validatedArgs.country
         });
         
-        return response.news.results.map((result, index) => ({
+        return response.results.map((result, index) => ({
           rank: index + 1,
           title: result.title,
           url: result.url,
           description: result.description,
-          source: result.source,
-          published_time: result.publishedTime,
-          image: result.image ? {
-            url: result.image.url,
-            dimensions: `${result.image.width}x${result.image.height}`
+          source: result.meta_url?.hostname || 'Unknown',
+          published_time: result.page_age,
+          image: result.thumbnail ? {
+            url: result.thumbnail.src,
+            dimensions: 'unknown'
           } : null,
           relevance_score: this.calculateRelevanceScore(result, enhancedQuery)
         }));

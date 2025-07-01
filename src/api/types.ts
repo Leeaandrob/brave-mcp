@@ -21,36 +21,51 @@ export interface BraveNewsResult {
   title: string;
   url: string;
   description: string;
-  source: string;
-  publishedTime: string;
-  image?: {
-    url: string;
-    height: number;
-    width: number;
+  age: string;
+  page_age: string;
+  thumbnail?: {
+    src: string;
   };
+  meta_url?: any;
+  type: string;
 }
 
 export interface BraveImageResult {
   title: string;
   url: string;
-  imageUrl: string;
   source: string;
-  height: number;
-  width: number;
+  thumbnail: {
+    src: string;
+    width: number;
+    height: number;
+  };
+  properties: {
+    url: string;
+    width: number;
+    height: number;
+  };
+  meta_url?: any;
+  type: string;
 }
 
 export interface BraveVideoResult {
   title: string;
   url: string;
-  videoUrl: string;
-  source: string;
-  duration?: string;
-  publishedTime?: string;
-  thumbnail?: {
-    url: string;
-    height: number;
-    width: number;
+  description: string;
+  age: string;
+  page_age: string;
+  video: {
+    duration: string;
+    views?: number;
+    creator?: string;
+    publisher?: string;
   };
+  thumbnail?: {
+    src: string;
+    original?: string;
+  };
+  meta_url?: any;
+  type: string;
 }
 
 export interface BraveWebSearchResponse {
@@ -61,22 +76,21 @@ export interface BraveWebSearchResponse {
 }
 
 export interface BraveNewsSearchResponse {
-  news: {
-    results: BraveNewsResult[];
-    totalResults: number;
-  };
+  results: BraveNewsResult[];
+  type: string;
+  query?: any;
 }
 
 export interface BraveImageSearchResponse {
-  images: {
-    results: BraveImageResult[];
-    totalResults: number;
-  };
+  results: BraveImageResult[];
+  type: string;
+  query?: any;
+  extra?: any;
 }
 
 export interface BraveVideoSearchResponse {
-  videos: {
-    results: BraveVideoResult[];
-    totalResults: number;
-  };
+  results: BraveVideoResult[];
+  type: string;
+  query?: any;
+  extra?: any;
 }

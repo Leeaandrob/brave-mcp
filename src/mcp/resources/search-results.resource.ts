@@ -102,8 +102,8 @@ export class SearchResultsResource {
             search_type: 'news',
             query,
             timestamp,
-            total_results: newsResults.news.totalResults,
-            results: newsResults.news.results.map((result, index) => ({
+            total_results: newsResults.results.length,
+            results: newsResults.results.map((result: any, index: number) => ({
               rank: index + 1,
               title: result.title,
               url: result.url,
@@ -121,8 +121,8 @@ export class SearchResultsResource {
             search_type: 'images',
             query,
             timestamp,
-            total_results: imageResults.images.totalResults,
-            results: imageResults.images.results.map((result, index) => ({
+            total_results: imageResults.results.length,
+            results: imageResults.results.map((result: any, index: number) => ({
               rank: index + 1,
               title: result.title,
               image_url: result.imageUrl,
@@ -142,8 +142,8 @@ export class SearchResultsResource {
             search_type: 'videos',
             query,
             timestamp,
-            total_results: videoResults.videos.totalResults,
-            results: videoResults.videos.results.map((result, index) => ({
+            total_results: videoResults.results.length,
+            results: videoResults.results.map((result: any, index: number) => ({
               rank: index + 1,
               title: result.title,
               video_url: result.videoUrl,
