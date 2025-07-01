@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   brave-mcp-server:
@@ -8,7 +8,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - BRAVE_API_KEY=${BRAVE_API_KEY}
+      - BRAVE_API_KEY=BSA1evm1hpf6GsRLHql3Xs_vp4Wuymn
       - REDIS_URL=redis://redis:6379
       - CACHE_ENABLED=true
       - LOG_LEVEL=info
@@ -16,7 +16,13 @@ services:
       - redis
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
